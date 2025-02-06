@@ -137,7 +137,7 @@ export const getManhwaTop = async (req, res) => {
       item.rank = $(element).find(".ctr").text().trim();
       item.title = $(element).find(".leftseries h2 a").text().trim();
       item.url = $(element).find(".leftseries h2 a").attr("href");
-      item.image = img.attr("src");
+      item.image = img.attr("src").split('?')[0];
       item.genres = $(element)
         .find(".leftseries span")
         .text()
