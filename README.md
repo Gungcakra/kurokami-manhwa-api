@@ -1,4 +1,4 @@
-![Preview](panel.png)
+![Preview](panel.webp)
 # Kurokami API
 Rest API Manhwa Bahasa Indonesia
 
@@ -7,6 +7,7 @@ https://komikstation.co/
 
 ## Fitur
 
+- **A-Z List Manhwa**
 - **Manhwa Terbaru**
 - **Manhwa Populer**
 - **Manhwa Top**
@@ -181,3 +182,11 @@ Ganti `$endpoint` dengan list endpoint ini.
 
   **Example:**  
   `https://kurokami.vercel.app/api/search/nano%20machine/page/2`
+  
+### 13. A-Z List Manhwa
+- **GET** `/list`
+
+  Get A-Z list manhwa.
+
+  **Example:**  
+  `https://kurokami.vercel.app/api/list`

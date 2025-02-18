@@ -137,7 +137,7 @@ export const getManhwaTop = async (req, res) => {
       item.rank = $(element).find(".ctr").text().trim();
       item.title = $(element).find(".leftseries h2 a").text().trim();
       item.url = $(element).find(".leftseries h2 a").attr("href");
-      item.image = img.attr("src").split('?')[0];
+      item.image = img.attr("src").split("?")[0];
       item.genres = $(element)
         .find(".leftseries span")
         .text()
@@ -433,7 +433,8 @@ export const getManhwaDetail = async (req, res) => {
 };
 
 export const getManhwaOnGoing = async (req, res) => {
-    const url = "https://komikstation.co/manga/?status=ongoing&type=manhwa&order=";
+  const url =
+    "https://komikstation.co/manga/?status=ongoing&type=manhwa&order=";
   try {
     const html = await fetchPage(url);
     const $ = load(html);
@@ -467,40 +468,32 @@ export const getManhwaOnGoing = async (req, res) => {
 
 export const getChapter = async (req, res) => {
   const { chapterId } = req.params;
-  const url = `https://komikstation.co/${chapterId}`; 
+  const url = `https://komikstation.co/${chapterId}`;
 
   try {
     const html = await fetchPage(url);
     const $ = load(html);
 
-    
     const title = $("h1.entry-title").text().trim();
 
-    
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    
     await delay(250);
 
-    
     const scriptContent = $("script")
       .filter((i, el) => {
         return $(el).html().includes("ts_reader.run");
       })
       .html();
 
-      
     const jsonString = scriptContent.match(/ts_reader\.run\((.*?)\);/)[1];
     const jsonObject = JSON.parse(jsonString);
 
-    
     const images = jsonObject.sources[0].images;
 
-    
     const prevChapter = jsonObject.prevUrl || null;
     const nextChapter = jsonObject.nextUrl || null;
 
-    
     const chapters = [];
     $(".nvx #chapter option").each((index, element) => {
       const chapterTitle = $(element).text().trim();
@@ -512,7 +505,6 @@ export const getChapter = async (req, res) => {
       });
     });
 
-    
     const prevButtonUrl = $(".ch-prev-btn").attr("href") || null;
     const nextButtonUrl = $(".ch-next-btn").attr("href") || null;
 
@@ -528,5 +520,34 @@ export const getChapter = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch chapter data" });
+  }
+};
+
+export const getList = async (req, res) => {
+  const url = "https://komikstation.co/manga/list-mode/";
+
+  try {
+    const html = await fetchPage(url);
+    const $ = load(html);
+
+    const manhwaLists = [];
+
+    $(".blix").each((index, element) => {
+      const name = $(element).find("> span > a").text().trim();
+      const manhwaList = [];
+
+      $(element).find("> ul > li").each((i, el) => {
+        const title = $(el).find("a.series").text().trim();
+        const href = $(el).find("a.series").attr("href");
+        manhwaList.push({ title, href });
+      });
+
+      manhwaLists.push({ name, manhwaList });
+    });
+
+    res.json(manhwaLists);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch data" });
   }
 };

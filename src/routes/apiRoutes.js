@@ -12,6 +12,7 @@ import {
   getManhwaDetail,
   getManhwaOnGoing,
   getChapter,
+  getList
 } from "../controllers/scrapingController.js";
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.get("/search/:searchId", getSearch);
 router.get("/search/:searchId/page/:pageNumber", getSearchPage);
 router.get("/manhwa-detail/:manhwaId", getManhwaDetail);
 router.get("/manhwa-ongoing", getManhwaOnGoing);
-router.get("/chapter/:chapterId", getChapter);
+router.get("/chapter/:chapterId", getChapter); 
+router.get("/list", getList); 
 
 export default router;
