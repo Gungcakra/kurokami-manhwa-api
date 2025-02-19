@@ -344,6 +344,7 @@ export const getManhwaDetail = async (req, res) => {
     const $ = load(html);
 
     const title = $(".infox .entry-title").text().trim();
+    const alternative = $(".wd-full span").text().trim();
     const imageSrc = $(".thumb img").attr("src");
     const rating = $(".rating .num").text().trim();
     const followedBy = $(".bmc").text().trim();
@@ -374,7 +375,7 @@ export const getManhwaDetail = async (req, res) => {
     const released = $(".fmed").eq(0).find("span").text().trim();
     const author = $(".fmed").eq(1).find("span").text().trim();
     const artist = $(".fmed").eq(2).find("span").text().trim();
-    const updatedOn = $(".fmed").eq(3).find("time").text().trim();
+    const updatedOn = $(".fmed").find("span time").text().trim();
 
     const genres = [];
     $(".mgen a").each((index, element) => {
@@ -403,6 +404,7 @@ export const getManhwaDetail = async (req, res) => {
 
     const manhwaDetails = {
       title,
+      alternative,
       imageSrc,
       rating,
       followedBy,
