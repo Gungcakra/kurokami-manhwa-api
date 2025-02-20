@@ -477,7 +477,7 @@ export const getChapter = async (req, res) => {
     const $ = load(html);
 
     const title = $("h1.entry-title").text().trim();
-
+    const manhwaLink = $(".ts-breadcrumb ol li").eq(1).find("a").attr("href");
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     await delay(250);
@@ -512,6 +512,7 @@ export const getChapter = async (req, res) => {
 
     res.json({
       title,
+      manhwaLink,
       images,
       prevChapter,
       nextChapter,
