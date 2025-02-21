@@ -1,6 +1,76 @@
 import { load } from "cheerio";
 import { fetchPage } from "../utils/fetchPage.js";
 
+export const getHome = async (req, res) => {
+  try {
+    const url = "https://komikstation.co/";
+    const html = await fetchPage(url);
+    const $ = load(html);
+
+    const results = [];
+
+    $(".utao").each((index, element) => {
+      const title = $(element).find(".luf h4").text().trim();
+      const link = $(element).find(".luf a.series").attr("href");
+      const imageSrc = $(element).find(".imgu img").attr("src");
+      const chapters = [];
+
+      const chapterElements = $(element).find(".luf ul li");
+      chapterElements.each((i, el) => {
+        const chapterLink = $(el).find("a").attr("href");
+        const chapterTitle = $(el).find("a").text().trim();
+        const timeAgo = $(el).find("span").text().trim();
+
+        chapters.push({
+          chapterLink,
+          chapterTitle,
+          timeAgo,
+        });
+      });
+
+      results.push({
+        title,
+        link,
+        imageSrc,
+        chapters,
+      });
+    });
+
+    const popularManhwa = [];
+    $(".serieslist.pop.wpop ul li").each((index, element) => {
+      const title = $(element).find(".leftseries h2 a").text().trim();
+      const link = $(element).find(".leftseries h2 a").attr("href");
+      const imageSrc = $(element).find(".imgseries img").attr("src");
+      const rating = $(element).find(".numscore").text().trim();
+
+      const genres = [];
+      $(element)
+      .find(".leftseries span a")
+      .each((i, el) => {
+        genres.push($(el).text().trim());
+      });
+
+      // Check for duplicates
+      const isDuplicate = popularManhwa.some(manhwa => manhwa.title === title);
+
+      if (!isDuplicate) {
+      popularManhwa.push({
+        title,
+        link,
+        imageSrc,
+        rating,
+        genres,
+      });
+      }
+    });
+
+    res.json({ latestUpdates: results, popularManhwa });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error occurred while scraping data");
+  }
+};
+
 export const getManhwaPopular = async (req, res) => {
   try {
     const url = "https://komikstation.co/manga/?type=manhwa&order=popular";
@@ -539,11 +609,13 @@ export const getList = async (req, res) => {
       const name = $(element).find("> span > a").text().trim();
       const manhwaList = [];
 
-      $(element).find("> ul > li").each((i, el) => {
-        const title = $(el).find("a.series").text().trim();
-        const href = $(el).find("a.series").attr("href");
-        manhwaList.push({ title, href });
-      });
+      $(element)
+        .find("> ul > li")
+        .each((i, el) => {
+          const title = $(el).find("a.series").text().trim();
+          const href = $(el).find("a.series").attr("href");
+          manhwaList.push({ title, href });
+        });
 
       manhwaLists.push({ name, manhwaList });
     });
