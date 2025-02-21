@@ -8,25 +8,25 @@ export const getHome = async (req, res) => {
     const $ = load(html);
 
     const results = [];
-
     $(".utao").each((index, element) => {
       const title = $(element).find(".luf h4").text().trim();
       const link = $(element).find(".luf a.series").attr("href");
       const imageSrc = $(element).find(".imgu img").attr("src");
       const chapters = [];
 
-      const chapterElements = $(element).find(".luf ul li");
-      chapterElements.each((i, el) => {
-        const chapterLink = $(el).find("a").attr("href");
-        const chapterTitle = $(el).find("a").text().trim();
-        const timeAgo = $(el).find("span").text().trim();
+      $(element)
+        .find(".luf ul li")
+        .each((i, el) => {
+          const chapterLink = $(el).find("a").attr("href");
+          const chapterTitle = $(el).find("a").text().trim();
+          const timeAgo = $(el).find("span").text().trim();
 
-        chapters.push({
-          chapterLink,
-          chapterTitle,
-          timeAgo,
+          chapters.push({
+            chapterLink,
+            chapterTitle,
+            timeAgo,
+          });
         });
-      });
 
       results.push({
         title,
@@ -42,29 +42,33 @@ export const getHome = async (req, res) => {
       const link = $(element).find(".leftseries h2 a").attr("href");
       const imageSrc = $(element).find(".imgseries img").attr("src");
       const rating = $(element).find(".numscore").text().trim();
-
       const genres = [];
+
       $(element)
-      .find(".leftseries span a")
-      .each((i, el) => {
-        genres.push($(el).text().trim());
-      });
+        .find(".leftseries span a")
+        .each((i, el) => {
+          genres.push($(el).text().trim());
+        });
 
-      // Check for duplicates
-      const isDuplicate = popularManhwa.some(manhwa => manhwa.title === title);
-
-      if (!isDuplicate) {
-      popularManhwa.push({
-        title,
-        link,
-        imageSrc,
-        rating,
-        genres,
-      });
+      if (!popularManhwa.some((manhwa) => manhwa.title === title)) {
+        popularManhwa.push({
+          title,
+          link,
+          imageSrc,
+          rating,
+          genres,
+        });
       }
     });
 
-    res.json({ latestUpdates: results, popularManhwa });
+    const genres = [];
+    $(".genre li a").each((index, element) => {
+      const genreTitle = $(element).text().trim();
+      const genreLink = $(element).attr("href");
+      genres.push({ title: genreTitle, link: genreLink });
+    });
+
+    res.json({ latestUpdates: results, popularManhwa, genres });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error occurred while scraping data");
