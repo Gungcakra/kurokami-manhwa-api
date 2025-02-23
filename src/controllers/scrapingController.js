@@ -9,7 +9,7 @@ export const getHome = async (req, res) => {
 
     const results = [];
     $(".utao").each((index, element) => {
-      const title = $(element).find(".luf h4").text().trim();
+      const title = $(element).find(".luf h3").text().trim();
       const link = $(element).find(".luf a.series").attr("href");
       const imageSrc = $(element).find(".imgu img").attr("src");
       const chapters = [];
