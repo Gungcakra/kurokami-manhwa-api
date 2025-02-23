@@ -7,7 +7,7 @@ export const getHome = async (req, res) => {
     const html = await fetchPage(url);
     const $ = load(html);
 
-    const results = [];
+    const latestUpdates = [];
     $(".utao").each((index, element) => {
       const title = $(element).find(".luf h3").text().trim();
       const link = $(element).find(".luf a.series").attr("href");
@@ -28,7 +28,7 @@ export const getHome = async (req, res) => {
           });
         });
 
-      results.push({
+      latestUpdates.push({
         title,
         link,
         imageSrc,
@@ -61,6 +61,40 @@ export const getHome = async (req, res) => {
       }
     });
 
+    const trending = [];
+    $(".listupd.popularslider .bs").each((index, element) => {
+      const title = $(element).find(".bsx .bigor .tt").text().trim();
+      const link = $(element).find(".bsx a").attr("href");
+      const imageSrc = $(element).find(".bsx img").attr("src");
+      const rating = $(element).find(".numscore").text().trim();
+      const latestChapter = $(element).find(".epxs").text().trim();
+
+      trending.push({
+      title,
+      link,
+      imageSrc,
+      rating,
+      latestChapter,
+      });
+
+
+      const genres = [];
+
+      $(element)
+        .find(".leftseries span a")
+        .each((i, el) => {
+          genres.push($(el).text().trim());
+        });
+
+      trending.push({
+        title,
+        link,
+        imageSrc,
+        rating,
+        genres,
+      });
+    });
+
     const genres = [];
     $(".genre li a").each((index, element) => {
       const genreTitle = $(element).text().trim();
@@ -68,7 +102,7 @@ export const getHome = async (req, res) => {
       genres.push({ title: genreTitle, link: genreLink });
     });
 
-    res.json({ latestUpdates: results, popularManhwa, genres });
+    res.json({ trending, latestUpdates, popularManhwa, genres });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error occurred while scraping data");
