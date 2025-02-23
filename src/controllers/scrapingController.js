@@ -69,30 +69,19 @@ export const getHome = async (req, res) => {
       const rating = $(element).find(".numscore").text().trim();
       const latestChapter = $(element).find(".epxs").text().trim();
 
-      trending.push({
-      title,
-      link,
-      imageSrc,
-      rating,
-      latestChapter,
-      });
-
-
-      const genres = [];
-
-      $(element)
-        .find(".leftseries span a")
-        .each((i, el) => {
-          genres.push($(el).text().trim());
+      if (
+        !trending.some((item) => item.title === title && item.link === link)
+      ) {
+        trending.push({
+          title,
+          link,
+          imageSrc,
+          rating,
+          latestChapter,
         });
+      }
 
-      trending.push({
-        title,
-        link,
-        imageSrc,
-        rating,
-        genres,
-      });
+
     });
 
     const genres = [];
