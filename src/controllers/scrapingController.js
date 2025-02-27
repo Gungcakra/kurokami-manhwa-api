@@ -653,3 +653,37 @@ export const getList = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch data" });
   }
 };
+
+export const getTest = async (req, res) => {
+  const urls = [
+    'https://manhwadesu.ws/sisters-man-chapter-10/',
+  ];
+
+  async function loadPage(url) {
+    try {
+      const response = await fetch(url);
+      const text = await response.text();
+      const $ = load(text);
+
+      // Wait for 1 second before scraping
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const scriptTag = $("script").filter((i, el) => $(el).html().includes('ts_reader.run')).html();
+      const jsonString = scriptTag.match(/ts_reader\.run\((.*?)\);/)[1];
+      const data = JSON.parse(jsonString);
+
+      const images = data.sources[0].images;
+      return images;
+    } catch (error) {
+      console.error(`Error loading ${url}:`, error);
+      throw error;
+    }
+  }
+
+  try {
+    const results = await Promise.all(urls.map(url => loadPage(url)));
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch data" });
+  }
+};
